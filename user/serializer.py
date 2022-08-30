@@ -4,7 +4,7 @@ from .models import Profile, User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['name','email', 'role']
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,7 +12,3 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'    
         
         
-class LoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['email','password']        

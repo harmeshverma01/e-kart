@@ -18,11 +18,13 @@ class User(AbstractBaseUser,PermissionsMixin):
     date = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     objects = UserManager()
     
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
+    
     
 
 class Profile(models.Model):
@@ -36,5 +38,6 @@ class Profile(models.Model):
     pincode = models.IntegerField()
     country = CountryField()
     
-        
+    def __str__(self) -> str:
+        return self.first_name
     

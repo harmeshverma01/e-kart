@@ -1,13 +1,12 @@
 from django.contrib.auth.models import BaseUserManager
 
 class UserManager(BaseUserManager):
-    def create_user(self, name, email, role, password=None):
+    def create_user(self,  email, role, password=None):
         if not email:
             raise ValueError("User mush have email address")
         
         user = self.model(
             email=self.normalize_email(email),
-            name = name,
             role = role
         )
         user.set_password(password),
@@ -24,14 +23,16 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, name, email, password):
+    def create_superuser(self,  email, password):
         user = self.create_user(
-            name,
             email,
-            password=password
+            password=password,
+            role='admin'
         )
         user.is_staff = True
-        user.admin = True
+        user.is_admin = True
+        user.is_superuser = True
         user.save(using=self._db)
+        print(user.__dict__)
         return user
         
