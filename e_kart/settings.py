@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'user',
+    'store',
     'phonenumber_field',
     'django_countries',
     'rest_framework',
