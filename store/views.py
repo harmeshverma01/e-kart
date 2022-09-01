@@ -83,6 +83,11 @@ class StoreView(APIView):
                 serializer.save()
             return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
         except:
-            return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)    
+            return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)  
+        
+    def delete(self, request, id=None):
+        store = Store.objects.get(id=id)
+        store.delete()
+        return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
         
         
