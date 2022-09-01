@@ -1,6 +1,17 @@
 from django.db import models
+from django_countries.fields import CountryField
 
+from user.models import User
 # Create your models here.
+
+class Store(models.Model):
+    name = models.CharField(max_length=50)
+    address= models.TextField()
+    city = models.CharField(max_length=50)
+    country = CountryField()
+    pincode = models.IntegerField()
+    vendor = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='vendors')
+
 
 class Category(models.Model):
     name = models.CharField(max_length=50)

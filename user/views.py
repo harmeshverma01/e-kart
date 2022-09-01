@@ -1,13 +1,14 @@
-from user.serializer import ProfileSerializer, UserSerializer
+from django.contrib.auth import authenticate
+
 from rest_framework import authentication, permissions
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from user.models import Profile, User
-from .utils import admin_required
 from rest_framework import status
 
+from user.serializer import ProfileSerializer, UserSerializer
+from user.models import Profile, User
+from .utils import admin_required
 
 
 # Create your views here.
@@ -18,9 +19,6 @@ class Userview(APIView):
     
     def get(self, request, id=None):
         user = User.objects.all()
-        role = request.GET.get('role',None)
-        if role is None:
-            user = user.filter(role=role)
         serializer = self.serializer_class(user, many=True)
         return Response(serializer.data)
     
@@ -61,7 +59,7 @@ class UserProfile(APIView):
     
     def get(self, request, id=None):
         user = User.objects.get(id=id)
-        profile = Profile.objects.get(user_id=user.id)
+        profile = Profile.objects.get(user)
         serializer = self.serializer_class(profile)
         return Response(serializer.data)
     
@@ -97,4 +95,5 @@ class RagisterView(APIView):
                 token = Token.objects.get_or_create(user=user)
             return Response({'token': str(token[0])})
         return Response(({'details':'Something went wrong!'}), status=status.HTTP_404_NOT_FOUND)  
+      
       
