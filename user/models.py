@@ -1,9 +1,10 @@
-from django.db import models
-import uuid
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .manager import UserManager
-from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
+from django.db import models
+
+from phonenumber_field.modelfields import PhoneNumberField
+from .manager import UserManager
+import uuid
 # Create your models here.
 
 class User(AbstractBaseUser,PermissionsMixin):

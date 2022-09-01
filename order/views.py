@@ -11,8 +11,8 @@ class OrderView(APIView):
     serializer_class = OrderSerializer
     
     def get(self, request, id=None):
-        order = Order.objects.get(id=id)
-        serializer = self.serializer_class(order)
+        order = Order.objects.all()
+        serializer = self.serializer_class(order, many=True)
         return Response(serializer.data)
     
     def post(self, request):
@@ -32,8 +32,8 @@ class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
     
     def get(self, request, id= None):
-        order = OrderDetails.objects.get(id=id)
-        serializer = self.serializer_class(order)
+        order = OrderDetails.objects.all()
+        serializer = self.serializer_class(order, many=True)
         return Response(serializer.data)
     
     def patch(self, request, id=None):

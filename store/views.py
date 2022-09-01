@@ -5,7 +5,7 @@ from rest_framework import status
 
 from store.serializer import Categoryserializer, Productserializer, StoreSerializer
 from store.models import Category, Product, Store
-from user.utils import vendor_required
+from user.utils import admin_required, both_required, vendor_required
 # Create your views here.
 
 class ProductView(APIView):
@@ -44,7 +44,7 @@ class CategoryView(APIView):
     
     def get(self, request, id=None):
         category = Category.objects.all()
-        serializer = self.serializer_class(category)
+        serializer = self.serializer_class(category, many=True)
         return Response(serializer.data)
     
     def post(self, request):
@@ -61,10 +61,12 @@ class CategoryView(APIView):
 
 class StoreView(APIView):
     serializer_class = StoreSerializer
+    permission_classes = [permissions.IsAuthenticated, both_required]
+    authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
         store = Store.objects.all()
-        serializer = self.serializer_class(store)
+        serializer = self.serializer_class(store, many=True)
         return Response(serializer.data)
     
     def post(self, request):
