@@ -13,8 +13,8 @@ class CartView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        cart = Cart.objects.filter(user=request.user)
-        serializer = self.serializer_class(cart, many=True)
+        cart = Cart.objects.get(user=request.user)
+        serializer = self.serializer_class(cart)
         return Response(serializer.data)
     
     

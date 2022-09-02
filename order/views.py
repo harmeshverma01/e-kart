@@ -1,14 +1,19 @@
+from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
 from order.serializer import OrderSerializer, OrderdetailsSerializer
 from order.models import Order, OrderDetails
+from user.utils import admin_required
 # Create your views here.
 
 
 class OrderView(APIView):
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication]
+    
     
     def get(self, request, id=None):
         order = Order.objects.all()
@@ -30,6 +35,8 @@ class OrderView(APIView):
 
 class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication, admin_required]
     
     def get(self, request, id= None):
         order = OrderDetails.objects.all()
@@ -46,4 +53,3 @@ class OrderDetailsView(APIView):
         except:
             return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)    
                     
-    

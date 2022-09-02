@@ -11,7 +11,6 @@ from user.serializer import ProfileSerializer, UserSerializer
 from user.models import Profile, User
 from .utils import admin_required
 
-
 # Create your views here.
 class Userview(APIView):
     permission_classes = [permissions.IsAuthenticated, admin_required]
