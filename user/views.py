@@ -11,10 +11,9 @@ from user.serializer import ProfileSerializer, UserSerializer
 from user.models import Profile, User
 from .utils import admin_required
 
-
 # Create your views here.
 class Userview(APIView):
-    permission_classes = [permissions.IsAuthenticated, admin_required]
+    permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = UserSerializer
     
@@ -26,7 +25,7 @@ class Userview(APIView):
     
 class Userdetailsview(APIView):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated, admin_required]
+    permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request):
@@ -101,5 +100,3 @@ class CreateprofileView(APIView):
                 return Response(({'UnAuthorized User'}), status=status.HTTP_401_UNAUTHORIZED)
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
-           
-           
