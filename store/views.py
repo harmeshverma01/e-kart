@@ -1,5 +1,5 @@
-from rest_framework import authentication, permissions
 from rest_framework.response import Response
+from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
 
@@ -17,6 +17,7 @@ class ProductView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def patch(self, request, id=None):
@@ -25,6 +26,7 @@ class ProductView(APIView):
             serializer = self.serializer_class(product, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                return Response(serializer.errors)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
             return Response(({'details':'product not found'}), status=status.HTTP_404_NOT_FOUND)        
@@ -51,6 +53,7 @@ class CategoryView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def delete(self, request, id=None):
@@ -65,14 +68,15 @@ class StoreView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        store = Store.objects.all()
-        serializer = self.serializer_class(store, many=True)
+        store = Store.objects.get()
+        serializer = self.serializer_class(store)
         return Response(serializer.data)
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)    
     
     def patch(self, request, id=None):
@@ -81,6 +85,7 @@ class StoreView(APIView):
             serializer = self.serializer_class(store, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                return Response(serializer.errors)
             return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
         except:
             return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)  
@@ -89,5 +94,3 @@ class StoreView(APIView):
         store = Store.objects.get(id=id)
         store.delete()
         return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
- 
-        

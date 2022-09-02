@@ -25,12 +25,11 @@ class Userview(APIView):
     
 class Userdetailsview(APIView):
     serializer_class = UserSerializer
-    permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request):
         user = User.objects.get(id=request.user.id)
-        serializer = self.serializer_class(user, many=True)
+        serializer = self.serializer_class(user)
         return Response(serializer.data)
   
     def patch(self, request, id=None):
@@ -39,6 +38,7 @@ class Userdetailsview(APIView):
             serializer = self.serializer_class(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                return Response(serializer.errors)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         except:
             return Response(({"message": "User not Found"}), status=status.HTTP_404_NOT_FOUND)       
@@ -52,7 +52,7 @@ class LoginView(APIView):
         if user:
             token = Token.objects.get_or_create(user=user)
             return Response({'token': str(token[0])})
-        return Response({'details': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(({'message': 'User Not Found'}), status=status.HTTP_404_NOT_FOUND)
 
 
 class UserProfile(APIView):
@@ -87,6 +87,7 @@ class CreateprofileView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     
@@ -100,3 +101,4 @@ class CreateprofileView(APIView):
                 return Response(({'UnAuthorized User'}), status=status.HTTP_401_UNAUTHORIZED)
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
+
