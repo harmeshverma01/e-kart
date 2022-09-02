@@ -11,7 +11,7 @@ from user.utils import admin_required
 
 class OrderView(APIView):
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     
@@ -35,8 +35,8 @@ class OrderView(APIView):
 
 class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [authentication.TokenAuthentication, admin_required]
+    permission_classes = [admin_required]
+    authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id= None):
         order = OrderDetails.objects.all()

@@ -1,4 +1,3 @@
-from webbrowser import get
 from django.shortcuts import get_object_or_404
 
 from rest_framework import authentication, permissions
@@ -12,7 +11,6 @@ from cart.models import Cart
 
 class CartView(APIView):
     serializer_class = CartSerializer
-    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):

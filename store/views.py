@@ -10,7 +10,7 @@ from store.models import Category, Product, Store
 
 class ProductView(APIView):
     serializer_class = Productserializer
-    permission_classes = [permissions.IsAuthenticated, vendor_required]
+    permission_classes = [vendor_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     def post(self, request):
@@ -61,7 +61,7 @@ class CategoryView(APIView):
 
 class StoreView(APIView):
     serializer_class = StoreSerializer
-    permission_classes = [permissions.IsAuthenticated, both_required]
+    permission_classes =[both_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
@@ -89,4 +89,5 @@ class StoreView(APIView):
         store = Store.objects.get(id=id)
         store.delete()
         return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
+ 
         
