@@ -5,7 +5,7 @@ from rest_framework import status
 
 from store.serializer import Categoryserializer, Productserializer, StoreSerializer
 from store.models import Category, Product, Store
-from user.utils import admin_required, both_required, vendor_required
+from user.utils import both_required, vendor_required
 # Create your views here.
 
 class ProductView(APIView):
