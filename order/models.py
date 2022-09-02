@@ -25,5 +25,6 @@ class OrderDetails(models.Model):
     price = models.CharField(max_length=20)
     
     def __str__(self) -> str:
-        return self.order    
+        return str(self.product)
+    
     

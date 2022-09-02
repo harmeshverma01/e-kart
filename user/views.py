@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 
 from rest_framework import authentication, permissions
@@ -22,15 +23,15 @@ class Userview(APIView):
         serializer = self.serializer_class(user, many=True)
         return Response(serializer.data)
     
-            
+    
 class Userdetailsview(APIView):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, admin_required]
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request):
         user = User.objects.get(id=request.user.id)
-        serializer = self.serializer_class(user)
+        serializer = self.serializer_class(user, many=True)
         return Response(serializer.data)
   
     def patch(self, request, id=None):
@@ -45,24 +46,43 @@ class Userdetailsview(APIView):
 
 
 class LoginView(APIView):
+    serializer_class = UserSerializer
     
     def post(self, request):
         user = authenticate(email=request.data.get('email'), password=request.data.get('password'))
         if user:
             token = Token.objects.get_or_create(user=user)
             return Response({'token': str(token[0])})
-        return Response(({'details':'User Not Found'}), status=status.HTTP_404_NOT_FOUND)
+        return Response({'details': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UserProfile(APIView):
     serializer_class = ProfileSerializer
     
     def get(self, request, id=None):
-        user = User.objects.get(id=id)
-        profile = Profile.objects.get(user)
-        serializer = self.serializer_class(profile)
+        profile = Profile.objects.all()
+        serializer = self.serializer_class(profile, many=True)
         return Response(serializer.data)
     
+        
+class RagisterView(APIView):
+    serializer_class = UserSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        user = None
+        if serializer.is_valid():
+            user = serializer.save(password=make_password(request.data['password']))
+            if user:
+                token = Token.objects.get_or_create(user=user)
+            return Response({'token': str(token[0])})
+        return Response(({'details':'Something went wrong!'}), status=status.HTTP_404_NOT_FOUND)  
+      
+
+class CreateprofileView(APIView):
+    serializer_class = ProfileSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -80,20 +100,6 @@ class UserProfile(APIView):
             else:
                 return Response(({'UnAuthorized User'}), status=status.HTTP_401_UNAUTHORIZED)
         except:
-            return Response( status=status.HTTP_404_NOT_FOUND)    
-        
-        
-class RagisterView(APIView):
-    serializer_class = UserSerializer
-    
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        user = None
-        if serializer.is_valid():
-            user = serializer.save()
-            if user:
-                token = Token.objects.get_or_create(user=user)
-            return Response({'token': str(token[0])})
-        return Response(({'details':'Something went wrong!'}), status=status.HTTP_404_NOT_FOUND)  
-      
-      
+            return Response( status=status.HTTP_404_NOT_FOUND)  
+           
+           

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'user',
     'store',
     'order',
+    'cart',
     'jazzmin',
     'phonenumber_field',
     'django_countries',
@@ -145,13 +146,13 @@ REST_FRAMEWORK = {
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Library Admin",
+    "site_title": "e_kart Admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Library",
+    "site_header": "e_kart",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Library",
+    "site_brand": "E_kart",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "books/img/logo.png",
@@ -169,10 +170,10 @@ JAZZMIN_SETTINGS = {
     "site_icon": None,
 
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to the library",
+    "welcome_sign": "Welcome to the e_kart",
 
     # Copyright on the footer
-    "copyright": "Acme Library Ltd",
+    "copyright": "e_kart pvt Ltd",
 
     # The model admin to search from the search bar, search bar omitted if excluded
     "search_model": "auth.User",
