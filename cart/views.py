@@ -1,3 +1,6 @@
+from webbrowser import get
+from django.shortcuts import get_object_or_404
+
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,7 +16,7 @@ class CartView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        cart = Cart.objects.get(user=request.user)
+        cart = get_object_or_404(Cart, user=request.user)
         serializer = self.serializer_class(cart)
         return Response(serializer.data)
     

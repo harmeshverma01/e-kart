@@ -90,4 +90,3 @@ class StoreView(APIView):
         store.delete()
         return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
         
-        
