@@ -101,4 +101,3 @@ class CreateprofileView(APIView):
                 return Response(({'UnAuthorized User'}), status=status.HTTP_401_UNAUTHORIZED)
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
-
