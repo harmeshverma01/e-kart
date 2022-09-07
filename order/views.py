@@ -26,7 +26,6 @@ class OrderView(APIView):
             return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)    
     
-    
     def delete(self, request, id=None):
         order = Order.objects.get(id=id)
         order.delete()
@@ -54,3 +53,5 @@ class OrderDetailsView(APIView):
         except:
             return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)    
                     
+
+        

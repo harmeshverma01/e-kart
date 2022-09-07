@@ -23,6 +23,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     objects = UserManager()
     
     
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
     
@@ -41,3 +42,11 @@ class Profile(models.Model):
     
     def __str__(self) -> str:
         return self.first_name
+
+
+class Forget_password(models.Model):
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name='users', null=True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    
+    # def __str__(self) -> str:
+    #     return self.user    
