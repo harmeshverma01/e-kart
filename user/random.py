@@ -1,24 +1,13 @@
-import math, random
-from django.core.mail import EmailMessage
-
-from user.serializer import ForgetpasswordSerializer
-
-
-def generateOTP():
-    digits = "0123456789"
-    OTP = ""
-    for i in range(4):
-        OTP += digits[math.floor(random.random() *10)]
-    return OTP
+from django.core.mail import send_mail
+import random
+from django.conf import settings
 
 
-def send_mail(request):
-    email = EmailMessage(
-        'Title',
-        (ForgetpasswordSerializer.otp),
-        'my-email',
-        ['my-receive-email']
-    )
-    email.attach_file(ForgetpasswordSerializer.file)
-    email.send()
+def send_otp(email):
+    subject = 'your account verification email'
+    otp = random.randint(9999, 10000)
+    message = f'your otp is {otp}'
+    email_from = settings.DEFAULT_FROM_EMAIL
+    send_mail(subject, message, email_from, [email])
+
     
