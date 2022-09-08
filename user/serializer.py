@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import  Forget_password, Profile, User
+from .models import  OTP, Profile, User
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,13 +10,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'   
-        
-class ForgetPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Forget_password
-        fields = '__all__'
-        
+
 
 class ForgetPasswordSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField()
-    otp = serializers.CharField()
+    class Meta:
+        model = OTP
+        fields = '__all__'
+    

@@ -43,13 +43,14 @@ class Profile(models.Model):
     def __str__(self) -> str:
         return self.first_name
 
-#Proper Name
 
-class Forget_password(models.Model):
+
+class OTP(models.Model):
     email = models.EmailField(max_length=50, unique=True, default=False)
     otp = models.CharField(max_length=6, null=True, blank=True)
     is_validate = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=True)
     
-    # def __str__(self) -> str:
-    #     return self.user    
+    def __str__(self) -> str:
+        return self.email
+    
