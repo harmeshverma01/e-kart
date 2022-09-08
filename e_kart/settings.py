@@ -286,11 +286,16 @@ JAZZMIN_UI_TWEAKS = {
     "dark_mode_theme": "darkly",
 }
 
+
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = "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"
+SENDGRID_API_KEY = "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"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "aditya007547@gmail.com"
 
+# SMTP_USER= "apikey"
+# SMTP_HOST= "smtp.sendgrid.net"
+# SMTP_PASSWORD= "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"

@@ -1,7 +1,8 @@
+import random
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
-from .random import generateOTP, send_mail
+from .random import send_otp
 
 from rest_framework import authentication, permissions
 from rest_framework.authtoken.models import Token
@@ -9,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from user.serializer import ForgetpasswordSerializer, ProfileSerializer, UserSerializer
+from user.serializer import ProfileSerializer, UserSerializer
 from user.models import  Forget_password, Profile, User
 from .utils import admin_required
 
@@ -105,23 +106,33 @@ class CreateprofileView(APIView):
             return Response( status=status.HTTP_404_NOT_FOUND)  
 
 
-
-class ForgetpasswordView(APIView):
-    serializer_class = ForgetpasswordSerializer
-    
+class ForgetPasswordView(APIView):
     
     def post(self, request):
-        user = get_object_or_404(User, user=request.user)
-        send_mail(
-                'change password'
-                f' Hii if you looks like you forgotten to your password', generateOTP(),
-            )
-        serializer = self.serializer_class(data=request.data)
-        user = None
-        if serializer.is_valid():
-            otp = request.GET.get('otp', None)
-            if otp is not None:
-                user = User.objects.get_or_create(otp=otp)
-                user.save()
-                return Response(({'message': 'create a new otp'}))    
-        return Response(({'details': 'password did not change!'}))
+        email = request.data.get('email')
+        get_object_or_404(User, email=email)
+        otp = random.randint(9999, 10000)
+        Forget_password.objects.update_or_create(email=email, defaults={'otp': otp})
+        send_otp(email)
+        return Response(status=status.HTTP_200_OK)
+        
+
+        
+class VerifyOtp(APIView):
+    
+    def post(self, request):
+        # data = request.data
+        # serializer = self.serializer_class(data=data)
+        # if serializer.is_valid():
+        #     email = serializer.data['email']
+        #     otp = serializer.data['otp']
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+        user = Forget_password.objects.filter(email=email, otp=otp)
+        if user.exists():
+            return Response(({'message': 'data is validated'}))
+        return Response(({'message': 'somethings went wrong'}))
+        
+     
+    
+            
