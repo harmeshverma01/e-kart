@@ -1,4 +1,3 @@
-import email
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
@@ -11,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from user.serializer import  ProfileSerializer, UserSerializer
+from user.serializer import  ProfileSerializer, ResetpasswordSerializer, UserSerializer
 from user.models import  OTP, Profile, User
 from .utils import admin_required
 
@@ -68,7 +67,7 @@ class UserProfile(APIView):
         serializer = self.serializer_class(profile, many=True)
         return Response(serializer.data)
    
-        
+     
 class RagisterView(APIView):
     serializer_class = UserSerializer
     
@@ -132,18 +131,19 @@ class ValidatedOtp(APIView):
            
 
 class ResetpasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = ResetpasswordSerializer
     
     def post(self, request):
+        email = request.data.get('email')
         password = request.data.get('password')
-        new_password = request.data.get('new_password')
-        confirm_password = request.data.get('confirm_password')
-        user = User.objects.filter(email=email)
-        if user.check_password(email):
-            password.validate_password(password=request.data, user=User)
-            return password
-        
-        return Response(({'details', 'create a password'}))
-        
-        
+        user = User.objects.get(email=email)
+        if user.check_password(password):
+            serializer = ResetpasswordSerializer(data=request.data)
+            if serializer.is_valid():
+                return Response(({'message': 'password changed successfully'}), status=status.HTTP_200_OK)
+            return Response(serializer.errors)
+        return Response(({'message': 'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
+    
+    
     
