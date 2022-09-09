@@ -135,15 +135,17 @@ class ResetpasswordView(APIView):
     serializer_class = ResetpasswordSerializer
     
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = User.objects.get(email=email)
-        if user.check_password(password):
-            serializer = ResetpasswordSerializer(data=request.data)
-            if serializer.is_valid():
+        serializer = ResetpasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user = get_object_or_404(User, email=email)
+            if user.check_password(password):
+                user.password=make_password(request.data['password'])
+                user.save()    
                 return Response(({'message': 'password changed successfully'}), status=status.HTTP_200_OK)
-            return Response(serializer.errors)
-        return Response(({'message': 'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
-    
-    
+            else:
+                return Response(({'message':'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors)
+
     
