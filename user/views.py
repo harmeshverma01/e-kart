@@ -1,8 +1,9 @@
-import random
+import email
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 from .random import send_otp
+import random
 
 from rest_framework import authentication, permissions
 from rest_framework.authtoken.models import Token
@@ -10,8 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from user.serializer import ProfileSerializer, UserSerializer
-from user.models import  Forget_password, Profile, User
+from user.serializer import  ProfileSerializer, UserSerializer
+from user.models import  OTP, Profile, User
 from .utils import admin_required
 
 
@@ -111,28 +112,38 @@ class ForgetPasswordView(APIView):
     def post(self, request):
         email = request.data.get('email')
         get_object_or_404(User, email=email)
-        otp = random.randint(9999, 10000)
-        Forget_password.objects.update_or_create(email=email, defaults={'otp': otp})
-        send_otp(email)
+        otp = random.randint(1000, 9999)
+        OTP.objects.update_or_create(email=email, defaults={'otp': otp})
+        send_otp(email, otp)
         return Response(status=status.HTTP_200_OK)
-        
 
-        
-class VerifyOtp(APIView):
+
+class ValidatedOtp(APIView):
     
     def post(self, request):
-        # data = request.data
-        # serializer = self.serializer_class(data=data)
-        # if serializer.is_valid():
-        #     email = serializer.data['email']
-        #     otp = serializer.data['otp']
         email = request.data.get('email')
         otp = request.data.get('otp')
-        user = Forget_password.objects.filter(email=email, otp=otp)
-        if user.exists():
-            return Response(({'message': 'data is validated'}))
-        return Response(({'message': 'somethings went wrong'}))
-        
-     
+        old = OTP.objects.filter(email=email, otp=otp, is_validate=True)
+        if old.exists():
+            old.update(is_validate=False)
+            return Response(({'message': 'otp matched'}))
+        else:
+            return Response(({'message': 'wrong otp'}))    
+           
+
+class ResetpasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     
-            
+    def post(self, request):
+        password = request.data.get('password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')
+        user = User.objects.filter(email=email)
+        if user.check_password(email):
+            password.validate_password(password=request.data, user=User)
+            return password
+        
+        return Response(({'details', 'create a password'}))
+        
+        
+    
