@@ -1,4 +1,7 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
+from store.models import Rating
 from .models import  OTP, Profile, User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,5 +35,14 @@ class ResetpasswordSerializer(serializers.Serializer):
         if new_password != confirm_password:
             raise serializers.ValidationError("new_password and confirm_password does not match")
         return attrs
-
+    
+    
+    def validate_password(self, password):
+        validate_password(password)
+        return password
                 
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'                

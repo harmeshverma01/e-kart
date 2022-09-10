@@ -2,7 +2,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django_countries.fields import CountryField
 from django.db import models
 
+
 from phonenumber_field.modelfields import PhoneNumberField
+
+
 from .manager import UserManager
 import uuid
 # Create your models here.
@@ -53,4 +56,5 @@ class OTP(models.Model):
     
     def __str__(self) -> str:
         return self.email
-    
+
+
