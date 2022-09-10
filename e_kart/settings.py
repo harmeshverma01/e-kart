@@ -96,6 +96,7 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -299,3 +300,4 @@ DEFAULT_FROM_EMAIL = "aditya007547@gmail.com"
 # SMTP_USER= "apikey"
 # SMTP_HOST= "smtp.sendgrid.net"
 # SMTP_PASSWORD= "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"
+

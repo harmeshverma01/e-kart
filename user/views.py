@@ -1,6 +1,8 @@
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
+
+from store.models import Rating
 from .random import send_otp
 import random
 
@@ -10,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from user.serializer import  ProfileSerializer, ResetpasswordSerializer, UserSerializer
+from user.serializer import  ProfileSerializer, RatingSerializer, ResetpasswordSerializer, UserSerializer
 from user.models import  OTP, Profile, User
 from .utils import admin_required
 
@@ -148,4 +150,17 @@ class ResetpasswordView(APIView):
                 return Response(({'message':'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors)
 
-    
+
+class RatingView(APIView):
+        serializer_class = RatingSerializer
+        
+        def get(self, request, id=None):
+            rating = Rating.objects.all()
+            serializer = self.serializer_class(rating, many=True)
+            return Response(serializer.data)
+        
+        def post(self, request):
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data)
