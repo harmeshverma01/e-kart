@@ -16,4 +16,21 @@ class ForgetPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = OTP
         fields = '__all__'
-    
+
+
+class ResetpasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
+    class Meta:
+        fields = ['email', 'password', 'new_password', 'confirm_password']
+        
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+        if new_password != confirm_password:
+            raise serializers.ValidationError("new_password and confirm_password does not match")
+        return attrs
+
+                
