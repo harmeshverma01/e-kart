@@ -1,5 +1,10 @@
 from django.contrib.auth.hashers import make_password
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
+
+from store.models import Rating
+from .random import send_otp
+import random
 
 from rest_framework import authentication, permissions
 from rest_framework.authtoken.models import Token
@@ -7,9 +12,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from user.serializer import ProfileSerializer, UserSerializer
-from user.models import Profile, User
+from user.serializer import  ProfileSerializer, RatingSerializer, ResetpasswordSerializer, UserSerializer
+from user.models import  OTP, Profile, User
 from .utils import admin_required
+
 
 # Create your views here.
 class Userview(APIView):
@@ -62,8 +68,8 @@ class UserProfile(APIView):
         profile = Profile.objects.all()
         serializer = self.serializer_class(profile, many=True)
         return Response(serializer.data)
-    
-        
+   
+     
 class RagisterView(APIView):
     serializer_class = UserSerializer
     
@@ -89,8 +95,7 @@ class CreateprofileView(APIView):
             serializer.save()
             return Response(serializer.errors)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    
+
     def patch(self, request, id=None):
         try:
             if request.user.id == id:
@@ -102,3 +107,60 @@ class CreateprofileView(APIView):
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
 
+
+class ForgetPasswordView(APIView):
+    
+    def post(self, request):
+        email = request.data.get('email')
+        get_object_or_404(User, email=email)
+        otp = random.randint(1000, 9999)
+        OTP.objects.update_or_create(email=email, defaults={'otp': otp})
+        send_otp(email, otp)
+        return Response(status=status.HTTP_200_OK)
+
+
+class ValidatedOtp(APIView):
+    
+    def post(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+        old = OTP.objects.filter(email=email, otp=otp, is_validate=True)
+        if old.exists():
+            old.update(is_validate=False)
+            return Response(({'message': 'otp matched'}))
+        else:
+            return Response(({'message': 'wrong otp'}))    
+           
+
+class ResetpasswordView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = ResetpasswordSerializer
+    
+    def post(self, request):
+        serializer = ResetpasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user = get_object_or_404(User, email=email)
+            if user.check_password(password):
+                user.password=make_password(request.data['password'])
+                user.save()    
+                return Response(({'message': 'password changed successfully'}), status=status.HTTP_200_OK)
+            else:
+                return Response(({'message':'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors)
+
+
+class RatingView(APIView):
+        serializer_class = RatingSerializer
+        
+        def get(self, request, id=None):
+            rating = Rating.objects.all()
+            serializer = self.serializer_class(rating, many=True)
+            return Response(serializer.data)
+        
+        def post(self, request):
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data)

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.hashers import make_password
 
 class UserManager(BaseUserManager):
     def create_user(self,  email, role, password=None):
@@ -18,7 +19,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             name,
             email,
-            password=password
+            password=make_password(password)
         )
         user.is_staff = True
         user.save(using=self._db)
@@ -27,7 +28,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self,  email, password):
         user = self.create_user(
             email,
-            password=password,
+            password=make_password(password),
             role='admin'
         )
         user.is_staff = True

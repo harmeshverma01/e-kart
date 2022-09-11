@@ -96,6 +96,7 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -285,3 +286,18 @@ JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
     "dark_mode_theme": "darkly",
 }
+
+
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = "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"
+SENDGRID_API_KEY = "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"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "aditya007547@gmail.com"
+
+# SMTP_USER= "apikey"
+# SMTP_HOST= "smtp.sendgrid.net"
+# SMTP_PASSWORD= "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"
+

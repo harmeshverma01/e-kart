@@ -2,7 +2,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django_countries.fields import CountryField
 from django.db import models
 
+
 from phonenumber_field.modelfields import PhoneNumberField
+
+
 from .manager import UserManager
 import uuid
 # Create your models here.
@@ -23,6 +26,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     objects = UserManager()
     
     
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
     
@@ -41,3 +45,16 @@ class Profile(models.Model):
     
     def __str__(self) -> str:
         return self.first_name
+
+
+
+class OTP(models.Model):
+    email = models.EmailField(max_length=50, unique=True, default=False)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    is_validate = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return self.email
+
+

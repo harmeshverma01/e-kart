@@ -94,3 +94,4 @@ class StoreView(APIView):
         store = Store.objects.get(id=id)
         store.delete()
         return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
+
