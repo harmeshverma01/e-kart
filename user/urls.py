@@ -4,7 +4,6 @@ from user.views import (
     CreateprofileView, 
     ForgetPasswordView, 
     LoginView,
-    RatingView,
     ResetpasswordView, 
     UserProfile, 
     Userview, 
@@ -24,5 +23,4 @@ urlpatterns = [
     path('forget-password', ForgetPasswordView.as_view()),
     path('validate-otp', ValidatedOtp.as_view()),
     path('reset_password', ResetpasswordView.as_view()),
-    path('rating', RatingView.as_view())
 ]
