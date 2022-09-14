@@ -1,5 +1,8 @@
+from itertools import product
 from rest_framework import serializers
 from .models import Category, Product, Rating, Store
+
+from django.db.models import Avg
 
 class Productserializer(serializers.ModelSerializer):
     class Meta:
@@ -21,7 +24,16 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = '__all__'
-        
+    
+    def get_avg_rating(self):
+        rating = Rating.objects.filter().aggregate(
+
+            Avg("rating")
+        )
+        return str(rating['rating'])
+    
+    # def average_rating(self):
+    #     return self.rating.aggretate(Avg('rating'))['rating__avg']    
     
         
                 
