@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
+from django.db.models import Avg
 
 from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
 from user.utils import both_required, vendor_required
@@ -105,7 +106,7 @@ class RatingView(APIView):
             product = request.GET.get('product', None)
             if product is not None:
                 # rating = request.data.get('rating')
-                rating = Rating.objects.filter(product=product)#.aggregate(Avg('rating'))['rating__avg']
+                rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
                 print('YTSVY' ,rating)
                 serializer = self.serializer_class(rating, many=True)
                 print("HAGDJU" ,serializer)
