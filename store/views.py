@@ -1,10 +1,8 @@
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
-
-from django.db.models import Count
-from django.core.exceptions import PermissionDenied
+from django.db.models import Avg
 
 from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
 from user.utils import both_required, vendor_required
@@ -20,8 +18,9 @@ class ProductView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.errors)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors)
+        
     
     def patch(self, request, id=None):
         try:
@@ -29,8 +28,8 @@ class ProductView(APIView):
             serializer = self.serializer_class(product, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.errors)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors)
         except:
             return Response(({'details':'product not found'}), status=status.HTTP_404_NOT_FOUND)        
         
@@ -56,8 +55,8 @@ class CategoryView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.errors)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors)
     
     def delete(self, request, id=None):
         product = Product.objects.get(id=id)
@@ -71,16 +70,16 @@ class StoreView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        store = Store.objects.get()
-        serializer = self.serializer_class(store)
+        store = Store.objects.all()
+        serializer = self.serializer_class(store, many=True)
         return Response(serializer.data)
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.errors)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)    
+            return Response(serializer.data, status=status.HTTP_201_CREATED)  
+        return Response(serializer.errors)
     
     def patch(self, request, id=None):
         try:
@@ -88,8 +87,8 @@ class StoreView(APIView):
             serializer = self.serializer_class(store, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.errors)
-            return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
+                return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
+            return Response(serializer.errors)
         except:
             return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)  
         
@@ -101,31 +100,32 @@ class StoreView(APIView):
 
 class RatingView(APIView):
         authentication_classes = [authentication.TokenAuthentication]
-        permission_classes = [permissions.IsAuthenticated]
         serializer_class = RatingSerializer
         
         def get(self, request, id=None):
             product = request.GET.get('product', None)
             if product is not None:
-                rating = Rating.objects.filter(product=product).annotate(Count('rating'))#.order_by('-avg_rating')
+                # rating = request.data.get('rating')
+                rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+                print('YTSVY' ,rating)
                 serializer = self.serializer_class(rating, many=True)
+                print("HAGDJU" ,serializer)
                 return Response(serializer.data)
             else:
                 return Response(({'details' : 'product id is required'})) 
 
         def post(self, request):
-            user = request.GET.get('user')
-            rating = Rating.objects.filter(user=user)
+            product = request.data.get('product')
+            rating = Rating.objects.filter(user=request.user, product=product)
             if rating.exists():
+                return Response(({'detail' : "you have given a rating before"}), status=status.HTTP_400_BAD_REQUEST)
+            else:
                 serializer = self.serializer_class(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
-                    return Response(serializer.errors)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(({'detail' : "you have given a rating before"}), status=status.HTTP_400_BAD_REQUEST)
-                    # raise PermissionDenied({'you have given a rating before'})
-                
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors)
+            
         def patch(self, request, id=None):
             try:
                 rating = Rating.objects.get(id=id)
@@ -136,5 +136,4 @@ class RatingView(APIView):
                 return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
             except:
                 return Response(({'detail': 'your rating is not updated'}), status=status.HTTP_400_BAD_REQUEST)
-            
-        
+    
