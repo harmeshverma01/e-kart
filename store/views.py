@@ -3,7 +3,6 @@ from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
 from django.db.models import Avg
-from django.db.models import Count
 
 from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
 from user.utils import both_required, vendor_required
@@ -117,11 +116,12 @@ class RatingView(APIView):
                 context = {
                     'avg_rating' : avg_rating,
                     'count_rating' : count_rating,
-                    'all_rating' : data,
+                    'all_rating' : data
                 }
                 return Response(context, status=status.HTTP_200_OK)
             else:
                 return Response(({'details' : 'product id is required'})) 
+
 
         def post(self, request):
             product = request.data.get('product')
@@ -134,6 +134,7 @@ class RatingView(APIView):
                     serializer.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors)
+
             
         def patch(self, request, id=None):
             try:
@@ -146,4 +147,5 @@ class RatingView(APIView):
             except:
                 return Response(({'detail': 'your rating is not updated'}), status=status.HTTP_400_BAD_REQUEST)
 
+    
     

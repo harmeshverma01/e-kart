@@ -16,6 +16,10 @@ class OrderView(APIView):
     
     def get(self, request, id=None):
         order = Order.objects.all()
+        start_date = request.GET.get('start_date', None)
+        end_date = request.GET.get('end_date', None)
+        if start_date is not None or end_date is not None :
+            order = order.filter(date_time =[start_date, end_date]) 
         serializer = self.serializer_class(order, many=True)
         return Response(serializer.data)
     
@@ -51,5 +55,5 @@ class OrderDetailsView(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors)
         except:
-            return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)    
+            return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)
     
