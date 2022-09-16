@@ -1,6 +1,9 @@
 from django.core.mail import send_mail
 from django.conf import settings
-import random
+
+from rest_framework.pagination import PageNumberPagination
+
+
 
 def send_otp(email, otp):
     subject = 'your account verification email'
@@ -14,4 +17,7 @@ def send_otp(email, otp):
         fail_silently = False
     )
     
-    
+class StandardResultSetPage(PageNumberPagination):
+    page_size = 4
+    page_size_query_param = 'page'
+    max_page_size = 10
