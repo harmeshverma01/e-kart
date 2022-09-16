@@ -111,8 +111,6 @@ class RatingView(APIView):
                 count_rating = rating.count()
                 serializer = self.serializer_class(rating, many=True)
                 data = serializer.data
-                data.append(avg_rating)
-                data.append(count_rating)
                 context = {
                     'avg_rating' : avg_rating,
                     'count_rating' : count_rating,

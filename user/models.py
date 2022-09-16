@@ -2,9 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django_countries.fields import CountryField
 from django.db import models
 
-
 from phonenumber_field.modelfields import PhoneNumberField
-
 
 from .manager import UserManager
 import uuid
@@ -25,15 +23,12 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     objects = UserManager()
     
-    
-    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
     
-    
 
 class Profile(models.Model):
-    user = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name='user')
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name='user_profile')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = PhoneNumberField()
@@ -45,8 +40,6 @@ class Profile(models.Model):
     
     def __str__(self) -> str:
         return self.first_name
-
-
 
 class OTP(models.Model):
     email = models.EmailField(max_length=50, unique=True, default=False)
