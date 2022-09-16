@@ -116,7 +116,7 @@ class ForgetPasswordView(APIView):
         otp = random.randint(1000, 9999)
         OTP.objects.update_or_create(email=email, defaults={'otp': otp})
         send_otp(email, otp)
-        return Response(status=status.HTTP_200_OK)
+        return Response(({'message' : 'otp sent successfully'})   , status=status.HTTP_200_OK)
 
 
 class ValidatedOtp(APIView):

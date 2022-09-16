@@ -44,12 +44,6 @@ class Rating(models.Model):
     review  = models.TextField() 
     date = models.DateTimeField(auto_now=True)
         
-    # def current_average():
-    #     rating = models.Rating.objects.annotate(
-    #         average = Avg('rating')
-    #     )
-    #     average  = rating.aggregate(average=Avg('average'))
-    #     return average
     
     def __str__(self) -> str:
         return self.review
