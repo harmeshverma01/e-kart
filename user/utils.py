@@ -17,3 +17,4 @@ class both_required(BasePermission):
         if request.user.role == 'vendor' or 'admin':
             return True
         return False
+    

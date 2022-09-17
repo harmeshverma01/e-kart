@@ -24,6 +24,8 @@ class OrderDetails(models.Model):
     quantity = models.IntegerField(default=1)
     price = models.CharField(max_length=20)
     
+
+    
     def __str__(self) -> str:
         return str(self.product)
         
