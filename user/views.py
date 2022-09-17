@@ -15,7 +15,6 @@ from user.serializer import  ProfileSerializer, ResetpasswordSerializer, UserSer
 from user.models import  OTP, Profile, User
 from .utils import admin_required
 
-
 # Create your views here.
 class Userview(APIView):
     permission_classes = [admin_required]

@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework import authentication
 from rest_framework import status
 
+from django.shortcuts import get_object_or_404
+
 from order.serializer import OrderSerializer, OrderdetailsSerializer
 from order.models import Order, OrderDetails
 from user.utils import admin_required
@@ -39,7 +41,7 @@ class OrderView(APIView):
         return Response(serializer.errors)
     
     def delete(self, request, id=None):
-        order = Order.objects.get(id=id)
+        order = get_object_or_404(Order, id=id)
         order.delete()
         return Response(({'message': 'order is deleted'}), status=status.HTTP_204_NO_CONTENT)        
     
