@@ -7,6 +7,6 @@ urlpatterns = [
     path('category', CategoryView.as_view()),
     path('product-list', Productlistview.as_view()),
     path('store', StoreView.as_view()),
-    path('store_ragister', StoreRagisterView.as_view()),
+    path('Create_store', StoreRagisterView.as_view()),
     path('rating', RatingView.as_view())
 ]

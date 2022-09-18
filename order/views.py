@@ -4,6 +4,7 @@ from rest_framework import authentication
 from rest_framework import status
 
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 
 from order.serializer import OrderSerializer, OrderdetailsSerializer
 from order.models import Order, OrderDetails
@@ -17,15 +18,18 @@ class OrderView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        city = request.GET.get('city')
         order = Order.objects.filter(user__user_profile__city__icontains=city)
         count_order = order.count()
+        page_number = request.GET.get('page_number', 1)
+        page_size = request.GET.get('page_size', 100)      
+        city = request.GET.get('city', None)
         from_date = request.GET.get('from_date', None)
         to_date = request.GET.get('to_date', None)
         status = request.GET.get('status', None)
-        if from_date is not None or to_date is not None and status is not None:
-            order = order.filter(date_time__range= [from_date, to_date ], status=status)
-        serializer = self.serializer_class(order, many=True)    
+        if from_date is not None or to_date is not None and status is not None or city is not None:
+            order = order.filter(date_time__range= [from_date, to_date ], status=status, city=city)
+        paginator = Paginator(order, page_size)
+        serializer = self.serializer_class(paginator.page(page_number), many=True)    
         data = serializer.data
         context = {
             "count_order" : count_order,
