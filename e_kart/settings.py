@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'order',
     'cart',
     'jazzmin',
+    'django_filters',
     'phonenumber_field',
     'django_countries',
     'rest_framework',
@@ -143,6 +144,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS' : {'django_filters.rest_framework.DjangoFilterBackend',
+                                    'rest_framework.filters.SearchFilter',}
 }
 
 JAZZMIN_SETTINGS = {
@@ -298,7 +301,6 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "aditya007547@gmail.com"
 
 # SMTP_USER= "apikey"
-
 # SMTP_HOST= "smtp.sendgrid.net"
 # SMTP_PASSWORD= "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"
 

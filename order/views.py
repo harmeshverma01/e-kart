@@ -5,6 +5,7 @@ from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from rest_framework import filters
 
 from order.serializer import OrderSerializer, OrderdetailsSerializer
 from order.models import Order, OrderDetails
@@ -16,10 +17,16 @@ class OrderView(APIView):
     serializer_class = OrderSerializer
     permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
+    filter_backends = [filters.SearchFilter]
     
     def get(self, request, id=None):
         order = Order.objects.all()
         count_order = order.count()
+        search_fields = (
+            'status',
+            'from_date',
+            'to_date',
+        )
         page_number = request.GET.get('page_number', 1)
         page_size = request.GET.get('page_size', 100)      
         from_date = request.GET.get('from_date', None)

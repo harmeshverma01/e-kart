@@ -2,9 +2,8 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
+
 from django.core.paginator import Paginator
-
-
 from django.db.models import Avg
 
 from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
@@ -156,4 +155,3 @@ class StoreView(APIView):
         serializer = self.serializer_class(store, many=True)
         return Response(serializer.data)
     
-   
