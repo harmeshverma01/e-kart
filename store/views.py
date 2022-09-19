@@ -2,11 +2,16 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
+from django.core.paginator import Paginator
+
+
 from django.db.models import Avg
 
 from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
-from user.utils import both_required, vendor_required
 from store.models import Category, Product, Rating, Store
+from user.utils import both_required, vendor_required
+from user.random import StandardResultSetPage
+
 # Create your views here.
 
 class ProductView(APIView):
@@ -36,12 +41,16 @@ class ProductView(APIView):
 
 class Productlistview(APIView):
     serializer_class = Productserializer
+    pagination_class = StandardResultSetPage
     
     def get(self, request, id=None):
         product = Product.objects.all()
-        serializer = self.serializer_class(product, many=True)
+        page_number = request.GET.get('page_number', 1)
+        page_size = request.GET.get('page_size', 10)
+        paginator = Paginator(product, page_size)
+        serializer = self.serializer_class(paginator.page(page_number),  many=True)
         return Response(serializer.data)
-    
+
     
 class CategoryView(APIView):
     serializer_class = Categoryserializer
@@ -64,15 +73,10 @@ class CategoryView(APIView):
         return Response(({'message':'product is deleted'}), status=status.HTTP_200_OK)    
 
 
-class StoreView(APIView):
+class StoreRagisterView(APIView):
     serializer_class = StoreSerializer
     permission_classes =[both_required]
     authentication_classes = [authentication.TokenAuthentication]
-    
-    def get(self, request, id=None):
-        store = Store.objects.all()
-        serializer = self.serializer_class(store, many=True)
-        return Response(serializer.data)
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -83,19 +87,19 @@ class StoreView(APIView):
     
     def patch(self, request, id=None):
         try:
-            store = Store.objects.get(id=id)
+            store = Store.objects.get(vendor=request.user)
             serializer = self.serializer_class(store, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_206_PARTIAL_CONTENT)
             return Response(serializer.errors)
         except:
-            return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)  
+             return Response(({'message': 'store Not Found'}), status=status.HTTP_404_NOT_FOUND)  
         
     def delete(self, request, id=None):
-        store = Store.objects.get(id=id)
+        store = Store.objects.get(vendor=request.user)
         store.delete()
-        return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT)      
+        return Response(({'message': 'store is deleted'}), status=status.HTTP_204_NO_CONTENT) 
 
 
 class RatingView(APIView):
@@ -107,12 +111,9 @@ class RatingView(APIView):
             if product is not None:
                 rating = Rating.objects.filter(product=product)
                 avg_rating = rating.aggregate(Avg('rating'))['rating__avg']
-                # count_rating = rating.aggregate(Count('rating'))
                 count_rating = rating.count()
                 serializer = self.serializer_class(rating, many=True)
                 data = serializer.data
-                data.append(avg_rating)
-                data.append(count_rating)
                 context = {
                     'avg_rating' : avg_rating,
                     'count_rating' : count_rating,
@@ -121,7 +122,6 @@ class RatingView(APIView):
                 return Response(context, status=status.HTTP_200_OK)
             else:
                 return Response(({'details' : 'product id is required'})) 
-
 
         def post(self, request):
             product = request.data.get('product')
@@ -135,7 +135,6 @@ class RatingView(APIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors)
 
-            
         def patch(self, request, id=None):
             try:
                 rating = Rating.objects.get(id=id)
@@ -148,4 +147,13 @@ class RatingView(APIView):
                 return Response(({'detail': 'your rating is not updated'}), status=status.HTTP_400_BAD_REQUEST)
 
     
+class StoreView(APIView):
+    serializer_class = StoreSerializer
+    permission_classes =[both_required]
     
+    def get(self, request, id=None):
+        store = Store.objects.all()
+        serializer = self.serializer_class(store, many=True)
+        return Response(serializer.data)
+    
+   

@@ -1,5 +1,8 @@
+argon2-cffi==21.3.0
+argon2-cffi-bindings==21.2.0
 asgiref==3.5.2
 attrs==22.1.0
+cffi==1.15.1
 Django==4.1
 django-countries==7.3.2
 django-jazzmin==2.5.0
@@ -7,7 +10,9 @@ django-phonenumber-field==6.4.0
 djangorestframework==3.13.1
 phonenumbers==8.12.54
 Pillow==9.2.0
+pycparser==2.21
 pytz==2022.2.1
+random-number==0.0.3
 scrapy-rotating-proxies==0.6.2
 six==1.16.0
 sqlparse==0.4.2

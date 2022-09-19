@@ -15,7 +15,6 @@ from user.serializer import  ProfileSerializer, ResetpasswordSerializer, UserSer
 from user.models import  OTP, Profile, User
 from .utils import admin_required
 
-
 # Create your views here.
 class Userview(APIView):
     permission_classes = [admin_required]
@@ -107,7 +106,6 @@ class CreateprofileView(APIView):
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
 
-
 class ForgetPasswordView(APIView):
     
     def post(self, request):
@@ -122,6 +120,7 @@ class ForgetPasswordView(APIView):
 class ValidatedOtp(APIView):
     
     def post(self, request):
+        
         email = request.data.get('email')
         otp = request.data.get('otp')
         old = OTP.objects.filter(email=email, otp=otp, is_validate=True)
@@ -149,3 +148,4 @@ class ResetpasswordView(APIView):
             else:
                 return Response(({'message':'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors)
+    
