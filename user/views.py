@@ -106,7 +106,6 @@ class CreateprofileView(APIView):
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
 
-
 class ForgetPasswordView(APIView):
     
     def post(self, request):
@@ -149,3 +148,4 @@ class ResetpasswordView(APIView):
             else:
                 return Response(({'message':'this is not valid password'}), status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors)
+    

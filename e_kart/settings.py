@@ -298,6 +298,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "aditya007547@gmail.com"
 
 # SMTP_USER= "apikey"
+
 # SMTP_HOST= "smtp.sendgrid.net"
 # SMTP_PASSWORD= "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"
 

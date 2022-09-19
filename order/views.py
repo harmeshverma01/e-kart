@@ -18,18 +18,22 @@ class OrderView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def get(self, request, id=None):
-        order = Order.objects.filter(user__user_profile__city__icontains=city)
+        order = Order.objects.all()
         count_order = order.count()
         page_number = request.GET.get('page_number', 1)
         page_size = request.GET.get('page_size', 100)      
-        city = request.GET.get('city', None)
         from_date = request.GET.get('from_date', None)
         to_date = request.GET.get('to_date', None)
         status = request.GET.get('status', None)
-        if from_date is not None or to_date is not None and status is not None or city is not None:
-            order = order.filter(date_time__range= [from_date, to_date ], status=status, city=city)
+        city = request.GET.get('city', None)
+        if from_date is not None or to_date:
+            order = order.filter(date_time__range = [from_date, to_date])
+        if status is not None:
+                order = order.filter(status=status)
+        if city is not None:
+            order = order.filter(user__user_profile__city__icontains=city)
         paginator = Paginator(order, page_size)
-        serializer = self.serializer_class(paginator.page(page_number), many=True)    
+        serializer = self.serializer_class(paginator.page(page_number), many=True)
         data = serializer.data
         context = {
             "count_order" : count_order,
@@ -49,6 +53,7 @@ class OrderView(APIView):
         order.delete()
         return Response(({'message': 'order is deleted'}), status=status.HTTP_204_NO_CONTENT)        
     
+
 class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
     permission_classes = [admin_required]
@@ -69,4 +74,5 @@ class OrderDetailsView(APIView):
             return Response(serializer.errors)
         except:
             return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)
+    
     

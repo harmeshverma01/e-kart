@@ -149,6 +149,7 @@ class RatingView(APIView):
     
 class StoreView(APIView):
     serializer_class = StoreSerializer
+    permission_classes =[both_required]
     
     def get(self, request, id=None):
         store = Store.objects.all()
