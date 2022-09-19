@@ -26,7 +26,7 @@ class OrderView(APIView):
         to_date = request.GET.get('to_date', None)
         status = request.GET.get('status', None)
         city = request.GET.get('city', None)
-        if from_date is not None or to_date:
+        if from_date is not None and to_date is not None:
             order = order.filter(date_time__range = [from_date, to_date])
         if status is not None:
                 order = order.filter(status=status)
