@@ -18,3 +18,4 @@ class CartView(APIView):
         cart = get_object_or_404(Cart, user=request.user)
         serializer = self.serializer_class(cart)
         return Response(serializer.data, status=status.HTTP_302_FOUND)
+    

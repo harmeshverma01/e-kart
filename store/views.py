@@ -5,9 +5,10 @@ from rest_framework import status
 
 from django.core.paginator import Paginator
 from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
 
-from store.serializer import Categoryserializer, Productserializer, RatingSerializer, StoreSerializer
-from store.models import Category, Product, Rating, Store
+from store.serializer import Categoryserializer, CoupenSerializer, Productserializer, RatingSerializer, StoreSerializer
+from store.models import Category, Coupen, Product, Rating, Store
 from user.utils import both_required, vendor_required
 from user.random import StandardResultSetPage
 
@@ -41,6 +42,8 @@ class ProductView(APIView):
 class Productlistview(APIView):
     serializer_class = Productserializer
     pagination_class = StandardResultSetPage
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category']
     
     def get(self, request, id=None):
         product = Product.objects.all()
@@ -154,4 +157,16 @@ class StoreView(APIView):
         store = Store.objects.all()
         serializer = self.serializer_class(store, many=True)
         return Response(serializer.data)
+
+
+class CreatecoupenView(APIView):
+    serializer_class = CoupenSerializer
     
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+        

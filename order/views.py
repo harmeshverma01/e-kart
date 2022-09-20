@@ -1,15 +1,18 @@
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import authentication
+from rest_framework.views import APIView
 from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from rest_framework import filters
 
 from order.serializer import OrderSerializer, OrderdetailsSerializer
+from store.serializer import Productserializer
 from order.models import Order, OrderDetails
 from user.utils import admin_required
+from store.models import Product
+
 
 # Create your views here.
 
@@ -17,16 +20,11 @@ class OrderView(APIView):
     serializer_class = OrderSerializer
     permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
-    filter_backends = [filters.SearchFilter]
+    
     
     def get(self, request, id=None):
         order = Order.objects.all()
         count_order = order.count()
-        search_fields = (
-            'status',
-            'from_date',
-            'to_date',
-        )
         page_number = request.GET.get('page_number', 1)
         page_size = request.GET.get('page_size', 100)      
         from_date = request.GET.get('from_date', None)
@@ -41,6 +39,7 @@ class OrderView(APIView):
             order = order.filter(user__user_profile__city__icontains=city)
         paginator = Paginator(order, page_size)
         serializer = self.serializer_class(paginator.page(page_number), many=True)
+        
         data = serializer.data
         context = {
             "count_order" : count_order,
@@ -65,6 +64,8 @@ class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
     permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
+    filter_backends = [SearchFilter]
+    search_fields = ['product']
     
     def get(self, request, id= None):
         order = OrderDetails.objects.all()
@@ -83,3 +84,16 @@ class OrderDetailsView(APIView):
             return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)
     
     
+class RecommendedProductView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = Productserializer
+    
+    def get(self, request):
+        product = OrderDetails.objects.filter(order__user=request.user).values('product__category').distinct()
+        print(product, "HSIG")
+        category = Product.objects.filter(category=product.id)
+        print(category, "HIGSU")
+        serializer = self.serializer_class(category,  many=True)
+        return Response(serializer.data)
+    
+   

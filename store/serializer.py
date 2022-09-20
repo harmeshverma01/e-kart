@@ -1,6 +1,6 @@
 from itertools import product
 from rest_framework import serializers
-from .models import Category, Product, Rating, Store
+from .models import Category, Product, Coupen, Rating, Store
 
 from django.db.models import Avg
 
@@ -36,4 +36,7 @@ class RatingSerializer(serializers.ModelSerializer):
     #     return self.rating.aggretate(Avg('rating'))['rating__avg']    
     
         
-                
+class CoupenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupen
+        fields = '__all__'                

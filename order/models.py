@@ -11,8 +11,8 @@ class Order(models.Model):
         ('Delivered', 'Delivered'),
         ('Canceled', 'Canceled')
     )
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='orders')
-    date_time = models.DateTimeField(auto_created=True)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='user_order')
+    date_time = models.DateTimeField(auto_created=True, null=True)
     status = models.CharField(max_length=60, choices=OrderStatus, default='pending')
     
     def __str__(self) -> str:
@@ -25,7 +25,6 @@ class OrderDetails(models.Model):
     price = models.CharField(max_length=20)
     
 
-    
     def __str__(self) -> str:
         return str(self.product)
         
