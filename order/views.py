@@ -1,4 +1,3 @@
-from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework import authentication
 from rest_framework.views import APIView
@@ -7,12 +6,11 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 
-from order.serializer import OrderSerializer, OrderdetailsSerializer
+from order.serializer import OrderSerializer, OrderdetailsSerializer, CoupenSerializer
 from store.serializer import Productserializer
-from order.models import Order, OrderDetails
+from order.models import Coupen, Order, OrderDetails
 from user.utils import admin_required
 from store.models import Product
-
 
 # Create your views here.
 
@@ -64,8 +62,6 @@ class OrderDetailsView(APIView):
     serializer_class = OrderdetailsSerializer
     permission_classes = [admin_required]
     authentication_classes = [authentication.TokenAuthentication]
-    filter_backends = [SearchFilter]
-    search_fields = ['product']
     
     def get(self, request, id= None):
         order = OrderDetails.objects.all()
@@ -82,18 +78,49 @@ class OrderDetailsView(APIView):
             return Response(serializer.errors)
         except:
             return Response(({'details': 'details not Found'}), status=status.HTTP_404_NOT_FOUND)
-    
+
     
 class RecommendedProductView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = Productserializer
     
-    def get(self, request):
-        product = OrderDetails.objects.filter(order__user=request.user).values('product__category').distinct()
-        print(product, "HSIG")
-        category = Product.objects.filter(category=product.id)
-        print(category, "HIGSU")
+    def get(self, request, id=None):
+        product = OrderDetails.objects.filter(order__user=request.user).values_list('product__category__id').distinct()
+        category = Product.objects.filter(category__in=product)
         serializer = self.serializer_class(category,  many=True)
         return Response(serializer.data)
     
-   
+    
+class CreatecoupenView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = CoupenSerializer
+    permission_classes =[admin_required]
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)   
+    
+
+class Applycoupencode(APIView):
+    serializer_class = CoupenSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    
+    def post(self, request):
+        price = request.data.get('price')
+        OrderDetails.objects.filter(price=price)
+        coupen_code = request.data.get('coupen_code')
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            discount = get_object_or_404(Coupen, coupen_code=coupen_code)
+            if coupen_code:
+                    result = price - discount
+                    return Response(result)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+        
+           
+                

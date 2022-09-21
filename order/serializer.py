@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from order.models import Order, OrderDetails
+from order.models import Order, OrderDetails, Coupen
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,3 +12,8 @@ class OrderdetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetails
         fields = '__all__'       
+        
+class CoupenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupen
+        fields = '__all__'                        

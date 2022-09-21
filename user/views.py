@@ -106,6 +106,7 @@ class CreateprofileView(APIView):
         except:
             return Response( status=status.HTTP_404_NOT_FOUND)  
 
+
 class ForgetPasswordView(APIView):
     
     def post(self, request):

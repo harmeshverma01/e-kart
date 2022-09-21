@@ -48,8 +48,3 @@ class Rating(models.Model):
     def __str__(self) -> str:
         return self.review
     
-class Coupen(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.TextField()
-    coupen_code = models.CharField(max_length=20)
-        
