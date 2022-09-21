@@ -26,7 +26,7 @@ class Category(models.Model):
     
     
 class Product(models.Model):
-    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name='product_category')
     name = models.CharField(max_length=100)
     price= models.DecimalField(max_digits=8, decimal_places=2)
     cover_image = models.ImageField()
@@ -48,4 +48,8 @@ class Rating(models.Model):
     def __str__(self) -> str:
         return self.review
     
-    
+class Coupen(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField()
+    coupen_code = models.CharField(max_length=20)
+        
