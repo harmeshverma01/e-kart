@@ -109,15 +109,13 @@ class Applycoupencode(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     
     def post(self, request):
-        price = request.data.get('price')
-        OrderDetails.objects.filter(price=price)
         coupen_code = request.data.get('coupen_code')
-        serializer = self.serializer_class(data=request.data)
+        coupen = get_object_or_404(Coupen, coupen_code=coupen_code)
+        discount = coupen.discount
+        price = request.data.get('price')
+        result = price - discount
+        serializer = self.serializer_class(result, many=True)
         if serializer.is_valid():
-            discount = get_object_or_404(Coupen, coupen_code=coupen_code)
-            if coupen_code:
-                    result = price - discount
-                    return Response(result)
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
