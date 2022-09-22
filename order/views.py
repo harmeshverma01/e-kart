@@ -7,8 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 
 from order.serializer import OrderSerializer, OrderdetailsSerializer, CoupenSerializer
-from store.serializer import Productserializer
+from cart.models import Cart
 from order.models import Coupen, Order, OrderDetails
+from store.serializer import Productserializer
 from user.utils import admin_required
 from store.models import Product
 
@@ -110,15 +111,19 @@ class Applycoupencode(APIView):
     
     def post(self, request):
         coupen_code = request.data.get('coupen_code')
-        coupen = get_object_or_404(Coupen, coupen_code=coupen_code)
-        discount = coupen.discount
+        coupon = get_object_or_404(Coupen, coupen_code=coupen_code)
+        discount = coupon.discount
+        max_price = coupon.max_price
+        if not max_price:
+            return Response(({'message': 'invalid coupon code'}), status=status.HTTP_400_BAD_REQUEST)
         price = request.data.get('price')
+        # objects = Cart.objects.filter(price=price, coupon__max_price=max_price)
         result = price - discount
         serializer = self.serializer_class(result, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+    
+    
         
-           
-                

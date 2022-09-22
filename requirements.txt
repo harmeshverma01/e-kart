@@ -5,6 +5,7 @@ attrs==22.1.0
 cffi==1.15.1
 Django==4.1
 django-countries==7.3.2
+django-filter==22.1
 django-jazzmin==2.5.0
 django-phonenumber-field==6.4.0
 djangorestframework==3.13.1

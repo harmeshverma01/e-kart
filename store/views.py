@@ -3,9 +3,9 @@ from rest_framework import authentication
 from rest_framework.views import APIView
 from rest_framework import status
 
+from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator
 from django.db.models import Avg
-from django_filters.rest_framework import DjangoFilterBackend
 
 from store.serializer import Categoryserializer,  Productserializer, RatingSerializer, StoreSerializer
 from store.models import Category,  Product, Rating, Store

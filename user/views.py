@@ -60,7 +60,6 @@ class LoginView(APIView):
 
 
 class UserProfile(APIView):
-
     serializer_class = ProfileSerializer
     
     def get(self, request, id=None):
@@ -121,7 +120,6 @@ class ForgetPasswordView(APIView):
 class ValidatedOtp(APIView):
     
     def post(self, request):
-        
         email = request.data.get('email')
         otp = request.data.get('otp')
         old = OTP.objects.filter(email=email, otp=otp, is_validate=True)
