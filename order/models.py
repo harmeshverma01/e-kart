@@ -27,4 +27,14 @@ class OrderDetails(models.Model):
 
     def __str__(self) -> str:
         return str(self.product)
+    
+class Coupen(models.Model):
+    coupen_code = models.CharField(max_length=20)
+    discount = models.PositiveIntegerField(default=0)
+    is_valid = models.BooleanField(default=True)
+    max_price = models.IntegerField(null=True)
+    
+    def __str__(self) -> str:
+        return self.coupen_code
+            
         
