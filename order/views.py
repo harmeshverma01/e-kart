@@ -6,12 +6,13 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 
-from order.serializer import OrderSerializer, OrderdetailsSerializer, CoupenSerializer
-from cart.models import Cart
+from order.serializer import OrderSerializer, OrderdetailsSerializer, CoupenSerializer, ApplyCoupenSerializer
+
 from order.models import Coupen, Order, OrderDetails
 from store.serializer import Productserializer
 from user.utils import admin_required
 from store.models import Product
+from cart.models import Cart
 
 # Create your views here.
 
@@ -102,11 +103,11 @@ class CreatecoupenView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors)   
+        return Response(serializer.errors)
     
 
 class Applycoupencode(APIView):
-    serializer_class = CoupenSerializer
+    serializer_class = ApplyCoupenSerializer
     authentication_classes = [authentication.TokenAuthentication]
     
     def post(self, request):
@@ -116,14 +117,16 @@ class Applycoupencode(APIView):
         max_price = coupon.max_price
         if not max_price:
             return Response(({'message': 'invalid coupon code'}), status=status.HTTP_400_BAD_REQUEST)
+        objects = Cart.objects.get(user=request.user)
         price = request.data.get('price')
-        # objects = Cart.objects.filter(price=price, coupon__max_price=max_price)
         result = price - discount
-        serializer = self.serializer_class(result, many=True)
+        serializer = self.serializer_class(objects, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
     
     
+    
         
+           
