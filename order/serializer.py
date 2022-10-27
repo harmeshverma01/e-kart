@@ -17,3 +17,8 @@ class CoupenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coupen
         fields = '__all__'                        
+        
+class ApplyCoupenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupen
+        fields = ['coupen_code']        

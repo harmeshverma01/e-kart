@@ -9,7 +9,6 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             role = role,
-            
         )
         user.set_password(password),
         user.save(using=self.db)
